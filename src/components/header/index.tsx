@@ -11,7 +11,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import { MouseEvent, useState } from 'react';
+import { ChangeEvent, MouseEvent, useState } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import { InputBase } from '@mui/material';
@@ -44,22 +44,27 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
 }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
+	display: 'flex',
 	color: 'inherit',
 	'& .MuiInputBase-input': {
 		padding: theme.spacing(1, 1, 1, 0),
 		paddingLeft: `calc(1em + ${theme.spacing(4)})`,
 		transition: theme.transitions.create('width'),
 		width: '100%',
-		[theme.breakpoints.up('md')]: {
-			width: '20ch',
-		},
 	},
 }));
 
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
-export function Header() {
+type HeaderProps = {
+	onSearchChange: (
+		event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+	) => void;
+	currentUser: User | null;
+};
+
+export function Header({ onSearchChange, currentUser }: HeaderProps) {
 	const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 	const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 
@@ -150,14 +155,16 @@ export function Header() {
 								<SearchIcon />
 							</SearchIconWrapper>
 							<StyledInputBase
+								onChange={onSearchChange}
 								placeholder='Search…'
 								inputProps={{ 'aria-label': 'search' }}
+								type='search'
 							/>
 						</Search>
 						<Box sx={{ flexGrow: 0 }}>
 							<Tooltip title='Open settings'>
 								<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-									<Avatar alt='Remy Sharp' src='/static/images/avatar/2.jpg' />
+									<Avatar alt={currentUser?.name} src={currentUser?.avatar} />
 								</IconButton>
 							</Tooltip>
 							<Menu

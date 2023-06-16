@@ -1,29 +1,94 @@
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 import { Header } from '../header';
 import { Footer } from '../footer';
 import { HomePage } from '../../pages/home';
-import { postData } from '../../posts.js';
 import { Box } from '@mui/material';
+import api from '../../utils/api';
+import { isLiked } from '../../utils/posts';
+import { useDebounce } from '../../hooks/useDebounce';
+import { Spinner } from '../spinner';
 
 export const App = () => {
 	const [posts, setPosts] = useState<Post[]>([]);
+	const [currentUser, setCurrentUser] = useState<User | null>(null);
+	const [searchQuery, setSearchQuery] = useState<string>('');
+	const [isLoading, setIsLoading] = useState<boolean>(false);
+
+	const debounceSearchQuery = useDebounce(searchQuery, 300);
+
+	const handleRequest = useCallback(
+		function handleRequest() {
+			setIsLoading(true);
+			api
+				.search(debounceSearchQuery)
+				.then((dataSearch) => {
+					setPosts(dataSearch);
+				})
+				.finally(() => setIsLoading(false));
+		},
+		[debounceSearchQuery]
+	);
+
+	function handleSearchInputChange(
+		event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+	) {
+		setSearchQuery(event.target.value);
+	}
+
+	useEffect(() => {
+		currentUser && handleRequest();
+	}, [debounceSearchQuery, handleRequest]);
 
 	function handlePostDelete(idPost: string) {
-		const newPosts = posts.filter((postState) => {
-			return postState._id !== idPost;
+		api.deletePostById(idPost).then((deletedPost) => {
+			const newPosts = posts.filter((postState) => {
+				return postState._id !== deletedPost._id;
+			});
+
+			setPosts(newPosts);
 		});
-		setPosts(newPosts);
 	}
+
+	function handlePostLike(post: { _id: string; likes: string[] }) {
+		const like = isLiked(post.likes, (currentUser as User)._id);
+
+		api.changeLikePostStatus(post._id, like).then((updatePost) => {
+			const newPosts = posts.map((postState) => {
+				return postState._id === updatePost._id ? updatePost : postState;
+			});
+
+			setPosts(newPosts);
+		});
+	}
+
 	useEffect(() => {
-		setPosts(postData);
+		api
+			.getAllInfo()
+			.then(([postsData, userInfoData]) => {
+				setCurrentUser(userInfoData);
+				setPosts(postsData);
+			})
+			.catch((err) => console.log(err));
 	}, []);
 
 	return (
 		<>
-			<Header />
+			<Header
+				onSearchChange={handleSearchInputChange}
+				currentUser={currentUser}
+			/>
 
 			<Box component='main' sx={{ pt: '30px', pb: '30px' }}>
-				<HomePage posts={posts} onPostDelete={handlePostDelete} />
+				{isLoading ? (
+					<Spinner />
+				) : (
+					<HomePage
+						posts={posts}
+						onPostLike={handlePostLike}
+						currentUser={currentUser}
+						onPostDelete={handlePostDelete}
+					/>
+				)}
 			</Box>
 
 			<Footer />

@@ -12,6 +12,7 @@ import cn from 'classnames';
 import styles from './post-card.module.css';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
+import { isLiked } from '../../utils/posts';
 dayjs.locale('ru');
 
 function FireIcon(props: SvgIconProps) {
@@ -42,6 +43,8 @@ function CloseIcon(props: SvgIconProps) {
 
 type PostCardProps = {
 	onPostDelete: (id: string) => void;
+	onPostLike: ({ id, likes }: any) => void;
+	currentUser: User | null;
 } & Post;
 export function PostCard({
 	_id,
@@ -52,24 +55,33 @@ export function PostCard({
 	created_at,
 	likes,
 	onPostDelete,
+	currentUser,
+	onPostLike,
 }: PostCardProps) {
-	const like = true;
+	const like = isLiked(likes, (currentUser as User)._id);
 
 	function handleClickRemove() {
-		onPostDelete(_id);
+		if (author._id === (currentUser as User)._id) {
+			onPostDelete(_id);
+		}
+	}
+	function handleClickLike() {
+		onPostLike({ likes, _id });
 	}
 
 	return (
 		<Card sx={{ maxWidth: 345 }} className={cn(styles.item)} data-id={_id}>
 			<div className={cn(styles.wrapper)}>
-				<CloseIcon
-					className={cn(styles.remove_icon)}
-					onClick={handleClickRemove}
-				/>
+				{author._id === (currentUser as User)._id && (
+					<CloseIcon
+						className={cn(styles.remove_icon)}
+						onClick={handleClickRemove}
+					/>
+				)}
 				<CardMedia
 					component='img'
 					image={image ? image : 'https://picsum.photos/480/320/'}
-					alt=''
+					alt={title}
 					className={cn(styles.media)}
 				/>
 				<CardHeader title={title}></CardHeader>
@@ -90,12 +102,15 @@ export function PostCard({
 						</Avatar>
 						<div>{author.name}</div>
 					</div>
-					<div
+					<button
 						data-like={like}
-						className={cn(styles.like, { [styles.like__active]: like })}
-						style={{ display: 'flex', alignItems: 'center' }}>
+						className={cn(styles.icon, styles.like, {
+							[styles.like__active]: like,
+						})}
+						style={{ display: 'flex', alignItems: 'center' }}
+						onClick={handleClickLike}>
 						<FireIcon /> {likes?.length}
-					</div>
+					</button>
 				</div>
 			</div>
 		</Card>

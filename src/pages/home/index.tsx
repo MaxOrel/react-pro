@@ -5,9 +5,16 @@ import { ChangeEvent, useState } from 'react';
 type HomePageProps = {
 	posts: Post[];
 	onPostDelete: (id: string) => void;
+	onPostLike: ({ id, likes }: any) => void;
+	currentUser: User | null;
 };
 
-export function HomePage({ posts, onPostDelete }: HomePageProps) {
+export function HomePage({
+	posts,
+	onPostDelete,
+	onPostLike,
+	currentUser,
+}: HomePageProps) {
 	const [isMasonry, setIsMasonry] = useState<boolean>(false);
 
 	function handleSwitchChange(event: ChangeEvent<HTMLInputElement>) {
@@ -31,6 +38,8 @@ export function HomePage({ posts, onPostDelete }: HomePageProps) {
 					type={isMasonry ? 'masonry' : 'grid'}
 					posts={posts}
 					onPostDelete={onPostDelete}
+					onPostLike={onPostLike}
+					currentUser={currentUser}
 				/>
 			</Container>
 		</>

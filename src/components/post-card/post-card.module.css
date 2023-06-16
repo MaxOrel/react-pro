@@ -15,6 +15,7 @@
 .media {
 	border-top-left-radius: 15px;
 	border-top-right-radius: 15px;
+	aspect-ratio: 4/3;
 }
 
 .avatar {
@@ -31,6 +32,12 @@
 	align-items: center;
 	margin-top: auto;
 	padding: 0 16px;
+}
+
+.icon {
+	padding: 0;
+	background-color: transparent;
+	border: none;
 }
 
 .like {

@@ -8,8 +8,16 @@ type PostListProps = {
 	posts: Post[];
 	type: string;
 	onPostDelete: (id: string) => void;
+	onPostLike: ({ id, likes }: any) => void;
+	currentUser: User | null;
 };
-export function PostsList({ posts, type, onPostDelete }: PostListProps) {
+export function PostsList({
+	posts,
+	type,
+	onPostDelete,
+	onPostLike,
+	currentUser,
+}: PostListProps) {
 	const PER_PAGE = 12;
 	const count = Math.ceil(posts.length / PER_PAGE);
 	const { currentPage, currentData, setPagePaginate } = usePagination<Post>(
@@ -27,7 +35,13 @@ export function PostsList({ posts, type, onPostDelete }: PostListProps) {
 				<Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 4 }} spacing={2}>
 					<>
 						{currentData().map((item) => (
-							<PostCard key={item._id} {...item} onPostDelete={onPostDelete} />
+							<PostCard
+								key={item._id}
+								{...item}
+								onPostLike={onPostLike}
+								currentUser={currentUser}
+								onPostDelete={onPostDelete}
+							/>
 						))}
 					</>
 				</Masonry>
@@ -42,7 +56,12 @@ export function PostsList({ posts, type, onPostDelete }: PostListProps) {
 							md={4}
 							lg={3}
 							key={item._id}>
-							<PostCard {...item} onPostDelete={onPostDelete} />
+							<PostCard
+								{...item}
+								onPostLike={onPostLike}
+								currentUser={currentUser}
+								onPostDelete={onPostDelete}
+							/>
 						</Grid>
 					))}
 				</Grid>
