@@ -59,10 +59,18 @@
 		"format": "prettier --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\" --ignore-path ./.prettierignore",
 		"test": "yarn stylelint:fix && yarn lint && yarn format",
 		"prepare": "husky install",
-		"commit": "cz"
+		"commit": "yarn test && cz"
 	},
 	"dependencies": {
+		"@emotion/react": "^11.11.1",
+		"@emotion/styled": "^11.11.0",
+		"@fontsource/nunito": "^5.0.3",
+		"@mui/icons-material": "^5.11.16",
+		"@mui/lab": "^5.0.0-alpha.134",
+		"@mui/material": "^5.13.5",
 		"classnames": "^2.3.2",
+		"dayjs": "^1.11.8",
+		"normalize.css": "^8.0.1",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0"
 	},

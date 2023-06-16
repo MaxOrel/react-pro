@@ -1,32 +1,32 @@
-import './styles.css';
-import s from './app.module.css';
-import reactImage from './images/react.png';
-import LogoUrl, { ReactComponent as LogoIcon } from './images/logo.svg';
-import { useState } from 'react';
-import { Button } from '../button';
+import { useEffect, useState } from 'react';
+import { Header } from '../header';
+import { Footer } from '../footer';
+import { HomePage } from '../../pages/home';
+import { postData } from '../../posts.js';
+import { Box } from '@mui/material';
 
 export const App = () => {
-	// const num = 0
-	const [count, setCount] = useState(0);
-	const margin = 40;
-	const headerStyle = {
-		color: 'red',
-		marginLeft: `${margin}px`,
-		marginBottom: `${margin}px`,
-	};
+	const [posts, setPosts] = useState<Post[]>([]);
+
+	function handlePostDelete(idPost: string) {
+		const newPosts = posts.filter((postState) => {
+			return postState._id !== idPost;
+		});
+		setPosts(newPosts);
+	}
+	useEffect(() => {
+		setPosts(postData);
+	}, []);
+
 	return (
 		<>
-			<h1 style={headerStyle}>Стилизованный заголовок</h1>
-			<Button type='primary'>Купить</Button>
-			<Button type='secondary'>Подробнее</Button>
+			<Header />
 
-			<LogoIcon className={s.root__icon} />
-			<img className={s.root__icon} src={LogoUrl} alt='Логотип' />
-			<img className={s.root__image} src={reactImage} alt='test' />
-			<h1 className={s.root}>React Typescript Webpack</h1>
-			<button className='test' onClick={() => setCount((c) => c + 1)}>
-				Count- {count}
-			</button>
+			<Box component='main' sx={{ pt: '30px', pb: '30px' }}>
+				<HomePage posts={posts} onPostDelete={handlePostDelete} />
+			</Box>
+
+			<Footer />
 		</>
 	);
 };

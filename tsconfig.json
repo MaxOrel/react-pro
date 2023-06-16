@@ -20,6 +20,7 @@
 		// "checkJs": true /* Report errors in .js files. Works in tandem with allowJs. */,
 		"plugins": [{ "name": "typescript-plugin-css-modules" }]
 	},
+	"typeRoots": ["./node_modules/@types", "./src/types"],
 	"outDir": "./dist/",
 	"include": ["src/**/*"]
 }
