@@ -2,7 +2,6 @@
 node_modules/
 .idea
 .vscode
-**.d.ts
 
 # Logs
 logs
