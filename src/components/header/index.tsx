@@ -7,7 +7,6 @@ import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
@@ -15,6 +14,7 @@ import { ChangeEvent, MouseEvent, useState } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import { InputBase } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const Search = styled('div')(({ theme }) => ({
 	flexGrow: 1,
@@ -54,8 +54,14 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 	},
 }));
 
-const pages = ['Products', 'Pricing', 'Blog'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages = [
+	{ name: 'Избранные', to: '/favorites' },
+	{ name: 'Комментарии', to: '/comments' },
+];
+const settings = [
+	{ name: 'Профиль', to: '/profile' },
+	{ name: 'Выйти', to: '/' },
+];
 
 type HeaderProps = {
 	onSearchChange: (
@@ -92,8 +98,8 @@ export function Header({ onSearchChange, currentUser }: HeaderProps) {
 						<Typography
 							variant='h6'
 							noWrap
-							component='a'
-							href='/'
+							component={Link}
+							to='/'
 							sx={{
 								mr: 2,
 								display: { xs: 'none', md: 'flex' },
@@ -134,20 +140,36 @@ export function Header({ onSearchChange, currentUser }: HeaderProps) {
 									display: { xs: 'block', md: 'none' },
 								}}>
 								{pages.map((page) => (
-									<MenuItem key={page} onClick={handleCloseNavMenu}>
-										<Typography textAlign='center'>{page}</Typography>
+									<MenuItem key={page.name} onClick={handleCloseNavMenu}>
+										<Typography
+											component={Link}
+											to={page.to}
+											sx={{
+												color: 'inherit',
+												textDecoration: 'none',
+											}}
+											textAlign='center'>
+											{page.name}
+										</Typography>
 									</MenuItem>
 								))}
 							</Menu>
 						</Box>
 						<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
 							{pages.map((page) => (
-								<Button
-									key={page}
+								<Typography
+									key={page.name}
 									onClick={handleCloseNavMenu}
-									sx={{ my: 2, color: 'white', display: 'block' }}>
-									{page}
-								</Button>
+									sx={{
+										mr: 2,
+										color: 'white',
+										display: 'block',
+										textDecoration: 'none',
+									}}
+									component={Link}
+									to={page.to}>
+									{page.name}
+								</Typography>
 							))}
 						</Box>
 						<Search>
@@ -183,8 +205,15 @@ export function Header({ onSearchChange, currentUser }: HeaderProps) {
 								open={Boolean(anchorElUser)}
 								onClose={handleCloseUserMenu}>
 								{settings.map((setting) => (
-									<MenuItem key={setting} onClick={handleCloseUserMenu}>
-										<Typography textAlign='center'>{setting}</Typography>
+									<MenuItem key={setting.name} onClick={handleCloseUserMenu}>
+										<Typography
+											sx={{ textDecoration: 'none' }}
+											component={Link}
+											color='inherit'
+											to={setting.to}
+											textAlign='center'>
+											{setting.name}
+										</Typography>
 									</MenuItem>
 								))}
 							</Menu>
