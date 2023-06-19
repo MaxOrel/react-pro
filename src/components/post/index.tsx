@@ -18,6 +18,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import TagOutlinedIcon from '@mui/icons-material/TagOutlined';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+
 import { useContext } from 'react';
 import { UserContext } from '../../contexts/user-context';
 import { PostsContext, PostsContextType } from '../../contexts/posts-context';
@@ -75,7 +76,6 @@ export function Post({
 	onPostLike,
 }: PostProps) {
 	const { onPostDelete } = useContext(PostsContext) as PostsContextType;
-
 	const currentUser = useContext(UserContext);
 	const like = isLiked(likes, currentUser?._id as string);
 

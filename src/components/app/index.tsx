@@ -13,12 +13,14 @@ import { ProfilePage } from '../../pages/profile';
 import { NotFoundPage } from '../../pages/not-found';
 import { UserContext } from '../../contexts/user-context';
 import { PostsContext } from '../../contexts/posts-context';
+import { ActionType, ActionsContext } from '../../contexts/actions-context';
 
 export const App = () => {
 	const [posts, setPosts] = useState<Post[]>([]);
 	const [currentUser, setCurrentUser] = useState<User | null>(null);
 	const [searchQuery, setSearchQuery] = useState<string>('');
 	const [isLoading, setIsLoading] = useState<boolean>(false);
+	const [quickActions, setQuickActions] = useState<ActionType[]>([]);
 
 	const debounceSearchQuery = useDebounce(searchQuery, 300);
 
@@ -89,30 +91,32 @@ export const App = () => {
 	}, []);
 
 	return (
-		<PostsContext.Provider
-			value={{
-				posts,
-				onPostDelete: handlePostDelete,
-				onPostLike: handlePostLike,
-			}}>
-			<UserContext.Provider value={currentUser}>
-				<Header onSearchChange={handleSearchInputChange} />
+		<ActionsContext.Provider value={{ quickActions, setQuickActions }}>
+			<PostsContext.Provider
+				value={{
+					posts,
+					onPostDelete: handlePostDelete,
+					onPostLike: handlePostLike,
+				}}>
+				<UserContext.Provider value={currentUser}>
+					<Header onSearchChange={handleSearchInputChange} />
 
-				<Box component='main' sx={{ pt: '30px', pb: '30px', flexGrow: 1 }}>
-					{isLoading ? (
-						<Spinner />
-					) : (
-						<Routes>
-							<Route path='/' element={<HomePage />} />
-							<Route path='/post/:postId' element={<SinglePostPage />} />
-							<Route path='/profile' element={<ProfilePage />} />
-							<Route path='*' element={<NotFoundPage />} />
-						</Routes>
-					)}
-				</Box>
+					<Box component='main' sx={{ pt: '30px', pb: '30px', flexGrow: 1 }}>
+						{isLoading ? (
+							<Spinner />
+						) : (
+							<Routes>
+								<Route path='/' element={<HomePage />} />
+								<Route path='/post/:postId' element={<SinglePostPage />} />
+								<Route path='/profile' element={<ProfilePage />} />
+								<Route path='*' element={<NotFoundPage />} />
+							</Routes>
+						)}
+					</Box>
 
-				<Footer />
-			</UserContext.Provider>
-		</PostsContext.Provider>
+					<Footer />
+				</UserContext.Provider>
+			</PostsContext.Provider>
+		</ActionsContext.Provider>
 	);
 };

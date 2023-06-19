@@ -1,13 +1,33 @@
 import { Container, Stack, Switch, Typography } from '@mui/material';
+import { ChangeEvent, useContext, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import { PostsList } from '../../components/posts-list';
-import { ChangeEvent, useState } from 'react';
+import {
+	ActionContextType,
+	ActionsContext,
+} from '../../contexts/actions-context';
 
 export function HomePage() {
 	const [isMasonry, setIsMasonry] = useState<boolean>(false);
+	const { setQuickActions } = useContext(ActionsContext) as ActionContextType;
 
 	function handleSwitchChange(event: ChangeEvent<HTMLInputElement>) {
 		setIsMasonry(event.target.checked ? true : false);
 	}
+
+	useEffect(() => {
+		setQuickActions([
+			{
+				icon: (
+					<Link className='speed-dial__action' to='/add-post'>
+						<AddOutlinedIcon />
+					</Link>
+				),
+				name: 'Добавить',
+			},
+		]);
+	}, []);
 
 	return (
 		<>

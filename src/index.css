@@ -19,3 +19,12 @@ code {
 	flex-direction: column;
 	min-height: 100vh;
 }
+
+.speed-dial__action {
+	display: inline-flex;
+	align-items: center;
+}
+
+.speed-dial__action:hover {
+	color: initial;
+}

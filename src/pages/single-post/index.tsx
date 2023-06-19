@@ -10,6 +10,7 @@ import { PostsContext, PostsContextType } from '../../contexts/posts-context';
 
 export function SinglePostPage() {
 	const { onPostLike } = useContext(PostsContext) as PostsContextType;
+
 	const { postId } = useParams<string>();
 	const [isLoading, setIsLoading] = useState(false);
 	const [post, setPost] = useState<Post | null>(null);

@@ -1,4 +1,12 @@
-import { createContext } from 'react';
+import { ReactNode, createContext } from 'react';
 
-export const ActionsContext = createContext(null);
+export interface ActionType {
+	icon: ReactNode;
+	name: string;
+}
+export interface ActionContextType {
+	quickActions: ActionType[];
+	setQuickActions: (actions: ActionType[]) => void;
+}
+export const ActionsContext = createContext<ActionContextType | null>(null);
 ActionsContext.displayName = 'ActionsContext';
