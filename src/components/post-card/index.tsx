@@ -8,6 +8,7 @@ import {
 	SvgIconProps,
 	Typography,
 } from '@mui/material';
+import { Link } from 'react-router-dom';
 import cn from 'classnames';
 import styles from './post-card.module.css';
 import dayjs from 'dayjs';
@@ -78,13 +79,15 @@ export function PostCard({
 						onClick={handleClickRemove}
 					/>
 				)}
-				<CardMedia
-					component='img'
-					image={image ? image : 'https://picsum.photos/480/320/'}
-					alt={title}
-					className={cn(styles.media)}
-				/>
-				<CardHeader title={title}></CardHeader>
+				<Link to={`/post/${_id}`} className={styles.link}>
+					<CardMedia
+						component='img'
+						image={image ? image : 'https://picsum.photos/480/320/'}
+						alt={title}
+						className={cn(styles.media)}
+					/>
+					<CardHeader title={title}></CardHeader>
+				</Link>
 				<CardContent sx={{ mb: 2 }} className={cn(styles.body)}>
 					<div className={cn(styles.date)}>
 						<CalendarIcon fontSize='small' className={cn(styles.date_icon)} />{' '}

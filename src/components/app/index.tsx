@@ -1,4 +1,5 @@
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import { Routes, Route } from 'react-router-dom';
 import { Header } from '../header';
 import { Footer } from '../footer';
 import { HomePage } from '../../pages/home';
@@ -9,6 +10,7 @@ import { useDebounce } from '../../hooks/useDebounce';
 import { Spinner } from '../spinner';
 import { SinglePostPage } from '../../pages/single-post';
 import { ProfilePage } from '../../pages/profile';
+import { NotFoundPage } from '../../pages/not-found';
 
 export const App = () => {
 	const [posts, setPosts] = useState<Post[]>([]);
@@ -91,27 +93,43 @@ export const App = () => {
 				currentUser={currentUser}
 			/>
 
-			<Box component='main' sx={{ pt: '30px', pb: '30px' }}>
+			<Box component='main' sx={{ pt: '30px', pb: '30px', flexGrow: 1 }}>
 				{isLoading ? (
 					<Spinner />
 				) : (
-					<>
-						<HomePage
-							posts={posts}
-							onPostLike={handlePostLike}
-							currentUser={currentUser}
-							onPostDelete={handlePostDelete}
+					<Routes>
+						<Route
+							path='/'
+							element={
+								<HomePage
+									posts={posts}
+									onPostLike={handlePostLike}
+									currentUser={currentUser}
+									onPostDelete={handlePostDelete}
+								/>
+							}
 						/>
-						<SinglePostPage
-							onPostLike={handlePostLike}
-							currentUser={currentUser}
-							onPostDelete={handlePostDelete}
+						<Route
+							path='/post/:postId'
+							element={
+								<SinglePostPage
+									onPostLike={handlePostLike}
+									currentUser={currentUser}
+									onPostDelete={handlePostDelete}
+								/>
+							}
 						/>
-						<ProfilePage
-							onPostDelete={handlePostDelete}
-							currentUser={currentUser}
+						<Route
+							path='/profile'
+							element={
+								<ProfilePage
+									onPostDelete={handlePostDelete}
+									currentUser={currentUser}
+								/>
+							}
 						/>
-					</>
+						<Route path='*' element={<NotFoundPage />} />
+					</Routes>
 				)}
 			</Box>
 
