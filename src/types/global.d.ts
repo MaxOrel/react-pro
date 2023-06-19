@@ -4,7 +4,7 @@ declare global {
 	interface Post {
 		image: string;
 		likes: string[];
-		comments: string[];
+		comments: Comment[];
 		tags: string[];
 		isPublished?: boolean;
 		_id: string;
@@ -34,4 +34,9 @@ declare global {
 		updated_at?: string;
 		created_at?: string;
 	}
+
+	type PostLikeParam = {
+		_id: string;
+		likes: string[];
+	};
 }

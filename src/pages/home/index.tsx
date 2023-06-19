@@ -5,7 +5,7 @@ import { ChangeEvent, useState } from 'react';
 type HomePageProps = {
 	posts: Post[];
 	onPostDelete: (id: string) => void;
-	onPostLike: ({ id, likes }: any) => void;
+	onPostLike: ({ _id, likes }: PostLikeParam) => Promise<Post>;
 	currentUser: User | null;
 };
 

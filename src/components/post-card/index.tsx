@@ -43,7 +43,7 @@ function CloseIcon(props: SvgIconProps) {
 
 type PostCardProps = {
 	onPostDelete: (id: string) => void;
-	onPostLike: ({ id, likes }: any) => void;
+	onPostLike: ({ _id, likes }: PostLikeParam) => Promise<Post>;
 	currentUser: User | null;
 } & Post;
 export function PostCard({
@@ -70,7 +70,7 @@ export function PostCard({
 	}
 
 	return (
-		<Card sx={{ maxWidth: 345 }} className={cn(styles.item)} data-id={_id}>
+		<Card className={cn(styles.item)} data-id={_id}>
 			<div className={cn(styles.wrapper)}>
 				{author._id === (currentUser as User)._id && (
 					<CloseIcon

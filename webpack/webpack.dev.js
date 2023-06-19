@@ -3,7 +3,7 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 
 module.exports = {
 	mode: 'development',
-	devtool: 'inline-source-map',
+	devtool: 'eval-source-map',
 	devServer: {
 		static: path.resolve(__dirname, './dist'), // путь, куда "смотрит" режим разработчика
 		// compress: true, // это ускорит загрузку в режиме разработки

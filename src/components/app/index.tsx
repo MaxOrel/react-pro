@@ -7,6 +7,8 @@ import api from '../../utils/api';
 import { isLiked } from '../../utils/posts';
 import { useDebounce } from '../../hooks/useDebounce';
 import { Spinner } from '../spinner';
+import { SinglePostPage } from '../../pages/single-post';
+import { ProfilePage } from '../../pages/profile';
 
 export const App = () => {
 	const [posts, setPosts] = useState<Post[]>([]);
@@ -40,25 +42,36 @@ export const App = () => {
 	}, [debounceSearchQuery, handleRequest]);
 
 	function handlePostDelete(idPost: string) {
-		api.deletePostById(idPost).then((deletedPost) => {
-			const newPosts = posts.filter((postState) => {
-				return postState._id !== deletedPost._id;
-			});
+		api
+			.deletePostById(idPost)
+			.then((deletedPost) => {
+				const newPosts = posts.filter((postState) => {
+					return postState._id !== deletedPost._id;
+				});
 
-			setPosts(newPosts);
-		});
+				setPosts(newPosts);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	}
 
-	function handlePostLike(post: { _id: string; likes: string[] }) {
+	function handlePostLike(post: PostLikeParam): Promise<Post> {
 		const like = isLiked(post.likes, (currentUser as User)._id);
 
-		api.changeLikePostStatus(post._id, like).then((updatePost) => {
-			const newPosts = posts.map((postState) => {
-				return postState._id === updatePost._id ? updatePost : postState;
-			});
+		return api
+			.changeLikePostStatus(post._id, like)
+			.then((updatePost) => {
+				const newPosts = posts.map((postState) => {
+					return postState._id === updatePost._id ? updatePost : postState;
+				});
 
-			setPosts(newPosts);
-		});
+				setPosts(newPosts);
+				return updatePost;
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	}
 
 	useEffect(() => {
@@ -82,12 +95,23 @@ export const App = () => {
 				{isLoading ? (
 					<Spinner />
 				) : (
-					<HomePage
-						posts={posts}
-						onPostLike={handlePostLike}
-						currentUser={currentUser}
-						onPostDelete={handlePostDelete}
-					/>
+					<>
+						<HomePage
+							posts={posts}
+							onPostLike={handlePostLike}
+							currentUser={currentUser}
+							onPostDelete={handlePostDelete}
+						/>
+						<SinglePostPage
+							onPostLike={handlePostLike}
+							currentUser={currentUser}
+							onPostDelete={handlePostDelete}
+						/>
+						<ProfilePage
+							onPostDelete={handlePostDelete}
+							currentUser={currentUser}
+						/>
+					</>
 				)}
 			</Box>
 

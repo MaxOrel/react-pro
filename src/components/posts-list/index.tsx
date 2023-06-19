@@ -8,7 +8,7 @@ type PostListProps = {
 	posts: Post[];
 	type: string;
 	onPostDelete: (id: string) => void;
-	onPostLike: ({ id, likes }: any) => void;
+	onPostLike: ({ _id, likes }: PostLikeParam) => Promise<Post>;
 	currentUser: User | null;
 };
 export function PostsList({
