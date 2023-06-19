@@ -14,6 +14,8 @@ import styles from './post-card.module.css';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
 import { isLiked } from '../../utils/posts';
+import { UserContext } from '../../contexts/user-context';
+import { useContext } from 'react';
 dayjs.locale('ru');
 
 function FireIcon(props: SvgIconProps) {
@@ -45,7 +47,6 @@ function CloseIcon(props: SvgIconProps) {
 type PostCardProps = {
 	onPostDelete: (id: string) => void;
 	onPostLike: ({ _id, likes }: PostLikeParam) => Promise<Post>;
-	currentUser: User | null;
 } & Post;
 export function PostCard({
 	_id,
@@ -56,9 +57,10 @@ export function PostCard({
 	created_at,
 	likes,
 	onPostDelete,
-	currentUser,
 	onPostLike,
 }: PostCardProps) {
+	const currentUser = useContext(UserContext);
+
 	const like = isLiked(likes, (currentUser as User)._id);
 
 	function handleClickRemove() {

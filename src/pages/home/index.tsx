@@ -2,19 +2,7 @@ import { Container, Stack, Switch, Typography } from '@mui/material';
 import { PostsList } from '../../components/posts-list';
 import { ChangeEvent, useState } from 'react';
 
-type HomePageProps = {
-	posts: Post[];
-	onPostDelete: (id: string) => void;
-	onPostLike: ({ _id, likes }: PostLikeParam) => Promise<Post>;
-	currentUser: User | null;
-};
-
-export function HomePage({
-	posts,
-	onPostDelete,
-	onPostLike,
-	currentUser,
-}: HomePageProps) {
+export function HomePage() {
 	const [isMasonry, setIsMasonry] = useState<boolean>(false);
 
 	function handleSwitchChange(event: ChangeEvent<HTMLInputElement>) {
@@ -34,13 +22,7 @@ export function HomePage({
 					/>
 					<Typography>Masonry</Typography>
 				</Stack>
-				<PostsList
-					type={isMasonry ? 'masonry' : 'grid'}
-					posts={posts}
-					onPostDelete={onPostDelete}
-					onPostLike={onPostLike}
-					currentUser={currentUser}
-				/>
+				<PostsList type={isMasonry ? 'masonry' : 'grid'} />
 			</Container>
 		</>
 	);

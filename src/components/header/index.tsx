@@ -10,11 +10,12 @@ import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import { ChangeEvent, MouseEvent, useState } from 'react';
+import { ChangeEvent, MouseEvent, useContext, useState } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import { InputBase } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { UserContext } from '../../contexts/user-context';
 
 const Search = styled('div')(({ theme }) => ({
 	flexGrow: 1,
@@ -67,13 +68,12 @@ type HeaderProps = {
 	onSearchChange: (
 		event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
 	) => void;
-	currentUser: User | null;
 };
 
-export function Header({ onSearchChange, currentUser }: HeaderProps) {
+export function Header({ onSearchChange }: HeaderProps) {
 	const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 	const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-
+	const currentUser = useContext(UserContext);
 	const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
 		setAnchorElNav(event.currentTarget);
 	};

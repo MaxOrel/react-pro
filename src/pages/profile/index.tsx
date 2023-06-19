@@ -10,7 +10,7 @@ import {
 	Typography,
 } from '@mui/material';
 import { Container } from '@mui/system';
-import { MouseEvent, useEffect, useState } from 'react';
+import { MouseEvent, useContext } from 'react';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
@@ -19,21 +19,12 @@ import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined
 import styles from './profile.module.css';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
-import api from '../../utils/api';
+import { UserContext } from '../../contexts/user-context';
+import { PostsContext, PostsContextType } from '../../contexts/posts-context';
 
-type ProfilePageProps = {
-	onPostDelete: (id: string) => void;
-	currentUser: User | null;
-};
-
-export function ProfilePage({ currentUser, onPostDelete }: ProfilePageProps) {
-	const [posts, setPosts] = useState<Post[]>([]);
-
-	useEffect(() => {
-		api.getPostsList().then((data) => {
-			setPosts(data);
-		});
-	}, []);
+export function ProfilePage() {
+	const currentUser = useContext(UserContext);
+	const { onPostDelete, posts } = useContext(PostsContext) as PostsContextType;
 
 	function handleDeleteClick(e: MouseEvent<HTMLElement>) {
 		e.preventDefault();
