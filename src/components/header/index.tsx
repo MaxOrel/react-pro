@@ -16,6 +16,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { InputBase } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { UserContext } from '../../contexts/user-context';
+import { PostsContext, PostsContextType } from '../../contexts/posts-context';
 
 const Search = styled('div')(({ theme }) => ({
 	flexGrow: 1,
@@ -64,16 +65,12 @@ const settings = [
 	{ name: 'Выйти', to: '/' },
 ];
 
-type HeaderProps = {
-	onSearchChange: (
-		event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-	) => void;
-};
-
-export function Header({ onSearchChange }: HeaderProps) {
+export function Header() {
 	const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 	const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
 	const currentUser = useContext(UserContext);
+	const { setSearchQuery } = useContext(PostsContext) as PostsContextType;
+
 	const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {
 		setAnchorElNav(event.currentTarget);
 	};
@@ -88,6 +85,12 @@ export function Header({ onSearchChange }: HeaderProps) {
 	const handleCloseUserMenu = () => {
 		setAnchorElUser(null);
 	};
+
+	function onSearchChange(
+		event: ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+	) {
+		setSearchQuery(event.target.value);
+	}
 
 	return (
 		<>

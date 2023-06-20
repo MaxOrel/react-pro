@@ -1,36 +1,18 @@
 import { useContext, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLoaderData, LoaderFunctionArgs } from 'react-router';
 import { Post } from '../../components/post';
 import api from '../../utils/api';
 import { Container } from '@mui/system';
-import { Spinner } from '../../components/spinner';
-import { NotFoundPage } from '../not-found';
 import { PostsContext, PostsContextType } from '../../contexts/posts-context';
 // const POST_ID = '645f59d8e0bf2c519ba489f9';
 
 export function SinglePostPage() {
 	const { onPostLike } = useContext(PostsContext) as PostsContextType;
-
-	const { postId } = useParams<string>();
-	const [isLoading, setIsLoading] = useState(false);
+	const postData = useLoaderData() as Post;
 	const [post, setPost] = useState<Post | null>(null);
-	const [errorState, setErrorState] = useState(null);
-
 	useEffect(() => {
-		setIsLoading(true);
-		if (postId)
-			api
-				.getPostById(postId)
-				.then((postData) => {
-					setPost(postData);
-				})
-				.catch((err) => {
-					setErrorState(err);
-				})
-				.finally(() => {
-					setIsLoading(false);
-				});
-	}, []);
+		setPost(postData);
+	}, [postData]);
 
 	function handlePostLike(post: PostLikeParam) {
 		onPostLike(post).then((updatePost) => {
@@ -41,15 +23,13 @@ export function SinglePostPage() {
 
 	return (
 		<>
-			{!errorState &&
-				(isLoading ? (
-					<Spinner />
-				) : (
-					<Container maxWidth='lg'>
-						<Post {...(post as Post)} onPostLike={handlePostLike} />
-					</Container>
-				))}
-			{errorState && <NotFoundPage />}
+			<Container maxWidth='lg'>
+				<Post {...(post as Post)} onPostLike={handlePostLike} />
+			</Container>
 		</>
 	);
 }
+export const singlePostLoader = async ({ params }: LoaderFunctionArgs) => {
+	console.log(params.postId);
+	return api.getPostById(params.postId as string);
+};

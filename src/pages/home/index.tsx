@@ -11,7 +11,6 @@ import {
 export function HomePage() {
 	const [isMasonry, setIsMasonry] = useState<boolean>(false);
 	const { setQuickActions } = useContext(ActionsContext) as ActionContextType;
-
 	function handleSwitchChange(event: ChangeEvent<HTMLInputElement>) {
 		setIsMasonry(event.target.checked ? true : false);
 	}

@@ -39,7 +39,7 @@ class Api {
 		}).then(this.onResponse);
 	}
 
-	getAllInfo() {
+	getAllInfo(): Promise<[Post[], User, Comment[]]> {
 		return Promise.all([
 			this.getPostsList(),
 			this.getUserInfo(),
