@@ -1,0 +1,13 @@
+.block {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 10px;
+	min-height: max-content;
+}
+
+.btns {
+	display: flex;
+	gap: 10px;
+}

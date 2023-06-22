@@ -9,6 +9,7 @@ import { SinglePostPage, singlePostLoader } from '../../pages/single-post';
 import { ProfilePage } from '../../pages/profile';
 import { NotFoundPage } from '../../pages/not-found';
 import { Layout, rootLoader } from '../layout/layout';
+import CounterPage from '../../pages/counter';
 
 const router = createBrowserRouter(
 	createRoutesFromElements(
@@ -22,6 +23,7 @@ const router = createBrowserRouter(
 				errorElement={<NotFoundPage />}
 			/>
 			<Route path='/profile' element={<ProfilePage />} />
+			<Route path='/counter' element={<CounterPage />} />
 			<Route path='*' element={<NotFoundPage />} />
 		</Route>
 	)

@@ -94,7 +94,15 @@ const Layout = () => {
 					<Header />
 					<main className='container'></main>
 
-					<Box component='main' sx={{ pt: '30px', pb: '30px', flexGrow: 1 }}>
+					<Box
+						component='main'
+						sx={{
+							pt: '30px',
+							pb: '30px',
+							flexGrow: 1,
+							display: 'flex',
+							justifyContent: 'center',
+						}}>
 						{navigation.state === 'loading' || isLoading ? (
 							<Spinner />
 						) : (
