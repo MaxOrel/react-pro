@@ -1,9 +1,9 @@
-// код файла store.js
-import { createStore, applyMiddleware } from 'redux';
-import { composeWithDevTools } from '@redux-devtools/extension';
-
+import { configureStore } from '@reduxjs/toolkit';
 import { rootReducer } from './reducers/rootReducer';
 
-const store = createStore(rootReducer, composeWithDevTools(applyMiddleware()));
+const store = configureStore({
+	reducer: rootReducer,
+	devTools: process.env.NODE_ENV !== 'production',
+});
 
 export default store;

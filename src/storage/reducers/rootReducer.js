@@ -1,6 +1,6 @@
 // Код файла rootReducer.js
 import { combineReducers } from 'redux';
-import counterReducer from './counterReducer';
+import counterReducer from './counterSlice';
 
 export const rootReducer = combineReducers({
 	counter: counterReducer,
