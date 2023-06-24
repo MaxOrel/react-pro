@@ -1,35 +1,30 @@
-import { useContext, useEffect, useState } from 'react';
-import { useLoaderData, LoaderFunctionArgs } from 'react-router';
+import { useEffect } from 'react';
+import { useParams } from 'react-router';
 import { Post } from '../../components/post';
-import api from '../../utils/api';
 import { Container } from '@mui/system';
-import { PostsContext, PostsContextType } from '../../contexts/posts-context';
+import { useAppDispath, useAppSelector } from '../../storage/hook';
+import { fetchSinglePost } from '../../storage/reducers/single-post/single-post-slice';
+import {
+	selectSinglePost,
+	selectSinglePostLoading,
+} from '../../storage/reducers/single-post/selectors';
+import { Spinner } from '../../components/spinner';
 // const POST_ID = '645f59d8e0bf2c519ba489f9';
 
 export function SinglePostPage() {
-	const { onPostLike } = useContext(PostsContext) as PostsContextType;
-	const postData = useLoaderData() as Post;
-	const [post, setPost] = useState<Post | null>(null);
+	const { postId } = useParams();
+	const dispatch = useAppDispath();
+	const post = useAppSelector(selectSinglePost);
+	const postIsLoading = useAppSelector(selectSinglePostLoading);
 	useEffect(() => {
-		setPost(postData);
-	}, [postData]);
-
-	function handlePostLike(post: PostLikeParam) {
-		onPostLike(post).then((updatePost) => {
-			console.log('updatePost', updatePost);
-			setPost(updatePost);
-		});
-	}
+		if (postId) dispatch(fetchSinglePost(postId));
+	}, [dispatch, postId]);
 
 	return (
 		<>
 			<Container maxWidth='lg'>
-				<Post {...(post as Post)} onPostLike={handlePostLike} />
+				{postIsLoading ? <Spinner /> : <Post {...(post as Post)} />}
 			</Container>
 		</>
 	);
 }
-export const singlePostLoader = async ({ params }: LoaderFunctionArgs) => {
-	console.log(params.postId);
-	return api.getPostById(params.postId as string);
-};

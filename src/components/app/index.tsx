@@ -5,20 +5,19 @@ import {
 	RouterProvider,
 } from 'react-router-dom';
 import { HomePage } from '../../pages/home';
-import { SinglePostPage, singlePostLoader } from '../../pages/single-post';
+import { SinglePostPage } from '../../pages/single-post';
 import { ProfilePage } from '../../pages/profile';
 import { NotFoundPage } from '../../pages/not-found';
-import { Layout, rootLoader } from '../layout/layout';
+import { Layout } from '../layout/layout';
 import CounterPage from '../../pages/counter';
 
 const router = createBrowserRouter(
 	createRoutesFromElements(
-		<Route path='/' id='root' loader={rootLoader} element={<Layout />}>
+		<Route path='/' id='root' element={<Layout />}>
 			<Route index element={<HomePage />} />
 			<Route
 				id='post'
 				path='/post/:postId'
-				loader={singlePostLoader}
 				element={<SinglePostPage />}
 				errorElement={<NotFoundPage />}
 			/>

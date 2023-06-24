@@ -14,8 +14,12 @@ import styles from './post-card.module.css';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
 import { isLiked } from '../../utils/posts';
-import { UserContext } from '../../contexts/user-context';
-import { useContext } from 'react';
+import { useAppDispath, useAppSelector } from '../../storage/hook';
+import { selectUser } from '../../storage/reducers/user/selectors';
+import {
+	fetchChangeLikePost,
+	fetchDeletePost,
+} from '../../storage/reducers/post/posts-slice';
 dayjs.locale('ru');
 
 function FireIcon(props: SvgIconProps) {
@@ -44,10 +48,6 @@ function CloseIcon(props: SvgIconProps) {
 	);
 }
 
-type PostCardProps = {
-	onPostDelete: (id: string) => void;
-	onPostLike: ({ _id, likes }: PostLikeParam) => Promise<Post>;
-} & Post;
 export function PostCard({
 	_id,
 	title,
@@ -56,20 +56,18 @@ export function PostCard({
 	image,
 	created_at,
 	likes,
-	onPostDelete,
-	onPostLike,
-}: PostCardProps) {
-	const currentUser = useContext(UserContext);
-
+}: Post) {
+	const currentUser = useAppSelector(selectUser);
+	const dispatch = useAppDispath();
 	const like = isLiked(likes, (currentUser as User)._id);
 
 	function handleClickRemove() {
 		if (author._id === (currentUser as User)._id) {
-			onPostDelete(_id);
+			dispatch(fetchDeletePost(_id));
 		}
 	}
 	function handleClickLike() {
-		onPostLike({ likes, _id });
+		dispatch(fetchChangeLikePost({ likes, _id }));
 	}
 
 	return (

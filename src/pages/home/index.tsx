@@ -7,9 +7,15 @@ import {
 	ActionContextType,
 	ActionsContext,
 } from '../../contexts/actions-context';
+import { selectUser } from '../../storage/reducers/user/selectors';
+import { selectPosts } from '../../storage/reducers/post/selectors';
+import { useAppSelector } from '../../storage/hook';
+import { Spinner } from '../../components/spinner';
 
 export function HomePage() {
 	const [isMasonry, setIsMasonry] = useState<boolean>(false);
+	const posts = useAppSelector(selectPosts);
+	const user = useAppSelector(selectUser);
 	const { setQuickActions } = useContext(ActionsContext) as ActionContextType;
 	function handleSwitchChange(event: ChangeEvent<HTMLInputElement>) {
 		setIsMasonry(event.target.checked ? true : false);
@@ -41,7 +47,11 @@ export function HomePage() {
 					/>
 					<Typography>Masonry</Typography>
 				</Stack>
-				<PostsList type={isMasonry ? 'masonry' : 'grid'} />
+				{!posts || !user ? (
+					<Spinner />
+				) : (
+					<PostsList type={isMasonry ? 'masonry' : 'grid'} />
+				)}
 			</Container>
 		</>
 	);

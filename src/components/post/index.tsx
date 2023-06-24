@@ -19,9 +19,14 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import TagOutlinedIcon from '@mui/icons-material/TagOutlined';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
-import { useContext } from 'react';
-import { UserContext } from '../../contexts/user-context';
-import { PostsContext, PostsContextType } from '../../contexts/posts-context';
+import { useAppDispath, useAppSelector } from '../../storage/hook';
+import { selectUser } from '../../storage/reducers/user/selectors';
+import {
+	fetchChangeLikePost,
+	fetchDeletePost,
+} from '../../storage/reducers/post/posts-slice';
+import { updatePostData } from '../../storage/reducers/single-post/single-post-slice';
+import { AnyAction } from 'redux';
 
 dayjs.extend(relativeTime);
 
@@ -60,10 +65,6 @@ function stringAvatar(name: string) {
 	};
 }
 
-type PostProps = {
-	onPostLike: ({ _id, likes }: PostLikeParam) => void;
-} & Post;
-
 export function Post({
 	_id,
 	title,
@@ -73,18 +74,21 @@ export function Post({
 	tags,
 	author,
 	comments,
-	onPostLike,
-}: PostProps) {
-	const { onPostDelete } = useContext(PostsContext) as PostsContextType;
-	const currentUser = useContext(UserContext);
+}: Post) {
+	const currentUser = useAppSelector(selectUser);
+	const dispatch = useAppDispath();
 	const like = isLiked(likes, currentUser?._id as string);
 
 	function handleClickLike() {
-		onPostLike({ likes, _id });
+		dispatch(fetchChangeLikePost({ likes, _id })).then(
+			(updatePost: AnyAction) => {
+				if (updatePost.payload.post)
+					dispatch(updatePostData(updatePost.payload.post));
+			}
+		);
 	}
-
 	function handleClickRemove() {
-		onPostDelete(_id);
+		dispatch(fetchDeletePost(_id));
 	}
 
 	return (

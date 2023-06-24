@@ -10,7 +10,7 @@ import {
 	Typography,
 } from '@mui/material';
 import { Container } from '@mui/system';
-import { MouseEvent, useContext } from 'react';
+import { MouseEvent } from 'react';
 import ArticleOutlinedIcon from '@mui/icons-material/ArticleOutlined';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
@@ -19,17 +19,20 @@ import VisibilityOffOutlinedIcon from '@mui/icons-material/VisibilityOffOutlined
 import styles from './profile.module.css';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
-import { UserContext } from '../../contexts/user-context';
-import { PostsContext, PostsContextType } from '../../contexts/posts-context';
+import { useAppDispath, useAppSelector } from '../../storage/hook';
+import { selectUser } from '../../storage/reducers/user/selectors';
+import { selectPosts } from '../../storage/reducers/post/selectors';
+import { fetchDeletePost } from '../../storage/reducers/post/posts-slice';
 
 export function ProfilePage() {
-	const currentUser = useContext(UserContext);
-	const { onPostDelete, posts } = useContext(PostsContext) as PostsContextType;
+	const dispatch = useAppDispath();
+	const currentUser = useAppSelector(selectUser);
+	const posts = useAppSelector(selectPosts);
 
 	function handleDeleteClick(e: MouseEvent<HTMLElement>) {
 		e.preventDefault();
 		const el = (e.target as HTMLElement).closest('.post') as HTMLElement;
-		onPostDelete(el.dataset.id as string);
+		dispatch(fetchDeletePost(el.dataset.id as string));
 	}
 
 	return (

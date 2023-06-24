@@ -15,8 +15,9 @@ import { styled, alpha } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import { InputBase } from '@mui/material';
 import { Link } from 'react-router-dom';
-import { UserContext } from '../../contexts/user-context';
 import { PostsContext, PostsContextType } from '../../contexts/posts-context';
+import { useAppSelector } from '../../storage/hook';
+import { selectUser } from '../../storage/reducers/user/selectors';
 
 const Search = styled('div')(({ theme }) => ({
 	flexGrow: 1,
@@ -68,7 +69,7 @@ const settings = [
 export function Header() {
 	const [anchorElNav, setAnchorElNav] = useState<null | HTMLElement>(null);
 	const [anchorElUser, setAnchorElUser] = useState<null | HTMLElement>(null);
-	const currentUser = useContext(UserContext);
+	const currentUser = useAppSelector(selectUser);
 	const { setSearchQuery } = useContext(PostsContext) as PostsContextType;
 
 	const handleOpenNavMenu = (event: MouseEvent<HTMLElement>) => {

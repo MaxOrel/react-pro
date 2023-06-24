@@ -1,7 +1,7 @@
 import {
 	derementByValue,
 	incrementByValue,
-} from '../../storage/reducers/counterSlice';
+} from '../../storage/reducers/counter/counter-slice';
 import './styles.css';
 
 import { useDispatch, useSelector } from 'react-redux';

@@ -1,17 +1,16 @@
 import Masonry from '@mui/lab/Masonry';
 import { PostCard } from '../post-card';
 import { Grid, Pagination, Stack, Typography } from '@mui/material';
-import { ChangeEvent, useContext } from 'react';
+import { ChangeEvent } from 'react';
 import usePagination from '../../hooks/usePagination';
-import { PostsContext, PostsContextType } from '../../contexts/posts-context';
+import { useAppSelector } from '../../storage/hook';
+import { selectPosts } from '../../storage/reducers/post/selectors';
 
 type PostListProps = {
 	type: string;
 };
 export function PostsList({ type }: PostListProps) {
-	const { posts, onPostDelete, onPostLike } = useContext(
-		PostsContext
-	) as PostsContextType;
+	const posts = useAppSelector(selectPosts);
 	const PER_PAGE = 12;
 	const count = Math.ceil(posts.length / PER_PAGE);
 	const { currentPage, currentData, setPagePaginate } = usePagination<Post>(
@@ -29,12 +28,7 @@ export function PostsList({ type }: PostListProps) {
 				<Masonry columns={{ xs: 1, sm: 2, md: 3, lg: 4 }} spacing={2}>
 					<>
 						{currentData().map((item) => (
-							<PostCard
-								key={item._id}
-								{...item}
-								onPostLike={onPostLike}
-								onPostDelete={onPostDelete}
-							/>
+							<PostCard key={item._id} {...item} />
 						))}
 					</>
 				</Masonry>
@@ -49,11 +43,7 @@ export function PostsList({ type }: PostListProps) {
 							md={4}
 							lg={3}
 							key={item._id}>
-							<PostCard
-								{...item}
-								onPostLike={onPostLike}
-								onPostDelete={onPostDelete}
-							/>
+							<PostCard {...item} />
 						</Grid>
 					))}
 				</Grid>

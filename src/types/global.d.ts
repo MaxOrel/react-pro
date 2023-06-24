@@ -1,10 +1,18 @@
 export {};
 
 declare global {
+	interface CommentPost {
+		_id: string;
+		text: string;
+		author?: User;
+		post?: Post;
+		updated_at?: string;
+		created_at?: string;
+	}
 	interface Post {
 		image: string;
 		likes: string[];
-		comments: Comment[];
+		comments: CommentPost[];
 		tags: string[];
 		isPublished?: boolean;
 		_id: string;
@@ -24,15 +32,6 @@ declare global {
 		email: string;
 		__v?: number;
 		group?: string;
-	}
-
-	interface Comment {
-		_id: string;
-		text: string;
-		author?: User;
-		post?: Post;
-		updated_at?: string;
-		created_at?: string;
 	}
 
 	type PostLikeParam = {
