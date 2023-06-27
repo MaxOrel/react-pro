@@ -9,6 +9,13 @@ module.exports = {
 		react: {
 			version: 'detect',
 		},
+		// Tells eslint how to resolve imports
+    'import/resolver': {
+      node: {
+        paths: ['src'],
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      },
+    },
 	},
 	extends: [
 		'plugin:@typescript-eslint/recommended',

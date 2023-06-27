@@ -1,20 +1,18 @@
-import { createRoot } from 'react-dom/client';
-import React, { StrictMode } from 'react';
-import { App } from './components/app';
-import './index.css';
-import '@fontsource/nunito/300.css';
-import '@fontsource/nunito/400.css';
-import '@fontsource/nunito/500.css';
-import '@fontsource/nunito/700.css';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 import { Provider } from 'react-redux';
-import store from './storage/store';
+import { store } from './app/store';
+import { ThemeProvider } from '@mui/material';
+import { theme } from './app/theme';
+import { RouterProvider } from 'react-router-dom';
+import { router } from './app/router';
 
-const domNode = document.getElementById('root') as HTMLDivElement;
-const root = createRoot(domNode);
-root.render(
-	<StrictMode>
-		<Provider store={store}>
-			<App />
-		</Provider>
-	</StrictMode>
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+	<React.StrictMode>
+		<ThemeProvider theme={theme}>
+			<Provider store={store}>
+				<RouterProvider router={router} />
+			</Provider>
+		</ThemeProvider>
+	</React.StrictMode>
 );
