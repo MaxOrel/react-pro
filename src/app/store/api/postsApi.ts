@@ -4,10 +4,7 @@ import { Post } from 'models/postModel';
 import { User } from 'models/userModel';
 
 // Интерфейс для типизации объекта поста, приходящего с сервера
-type BE_GetPostResponse = Omit<
-	Post,
-	'id' | 'author' | 'createdAt' | 'updatedAt'
-> & {
+type BE_Post = Omit<Post, 'id' | 'author' | 'createdAt' | 'updatedAt'> & {
 	_id: Post['id'];
 	created_at: Post['createdAt'];
 	updated_at: Post['updatedAt'];
@@ -15,6 +12,19 @@ type BE_GetPostResponse = Omit<
 		_id: User['id'];
 	};
 };
+
+// При использовании пагинации, бэк присылает
+// данные в следующем формате
+interface BE_PostsResponse {
+	postLength: number;
+	posts: BE_Post[];
+	total: number;
+}
+
+// Желаемый формат данных от бэека при использовании пагинации
+interface PostsResponse extends Omit<BE_PostsResponse, 'posts'> {
+	posts: Post[];
+}
 
 // Вспомогательная утилита, которая преобразует объект поста
 // приходящего с бэка, в объект поста, который нужен фронтУ
@@ -24,7 +34,7 @@ const mapBackendPostToFrontend = ({
 	created_at,
 	updated_at,
 	...restPost
-}: BE_GetPostResponse): Post => {
+}: BE_Post): Post => {
 	return {
 		id: postId,
 		author: {
@@ -49,25 +59,70 @@ export const postApi = createApi({
 	tagTypes: ['Posts'],
 	endpoints: (builder) => ({
 		// Endpoint для получения списка постов
-		getPosts: builder.query<Post[], Pick<User, 'group'>>({
-			query: ({ group }) => ({
-				url: `v2/${group}/posts`,
+		getPosts: builder.query<
+			PostsResponse,
+			Pick<User, 'group'> & { searchPhrase: string; page: number }
+		>({
+			query: ({ group, searchPhrase, page }) => ({
+				url: `v2/${group}/posts/paginate`,
+				params: {
+					page,
+					// Для проекта с постами мы жестко зафиксировали, что одна
+					// страница — это 12 элементов. Сделано это на основе макета и
+					// здравой логики
+					limit: 12,
+					query: searchPhrase,
+				},
 			}),
+			// Так как ключ кэширования по умолчанию формируется на основе всех
+			// параметров, которые принимает endpoint, то нам нужно переопределить это поведение
+			// По сути у нас одна — бесконечно длинная страница, которая состоит из
+			// кусочков по 12 элементов. Поэтому мы формируем ключ кэширования на основе
+			// имени endpointa + поисковой фразы
+			serializeQueryArgs: ({ endpointName, queryArgs: { searchPhrase } }) => {
+				return endpointName + searchPhrase;
+			},
+			// Полученные данные мы должны объединить с предыдущими данными в кэше, чтобы
+			// получить единую страницу с результатом
+			merge: (currentCache, newValue, { arg: { page } }) => {
+				if (page === 1) return;
+				currentCache.posts.push(...newValue.posts);
+			},
+			// Так как номер страницы теперь не является части ключа кэширования, то мы должны
+			// самостоятельно определить момент, когда система должна отправить запрос к бэку
+			forceRefetch({ currentArg, previousArg }) {
+				return currentArg !== previousArg;
+			},
 			// Здесь мы говорим, что запрос на получения постов должен быть
 			// закэширован по тегу "Posts"
-			providesTags: ['Posts'],
-			transformResponse: (response: BE_GetPostResponse[]) => {
-				return response.map(mapBackendPostToFrontend);
+			providesTags: (result) => {
+				return result
+					? [
+							// Здесь мы кэшируем все полученные посты, чтобы при переходе
+							// на детальную страницу не загружать информацию о посте еще раз
+							// Читай доку https://redux-toolkit.js.org/rtk-query/usage/pagination#automated-re-fetching-of-paginated-queries
+							...result.posts.map(({ id }) => ({ type: 'Posts' as const, id })),
+							// Так же мы кэшируем сам список
+							{ type: 'Posts', id: 'PARTIAL-LIST' },
+					  ]
+					: // Так же мы кэшируем сам список
+					  [{ type: 'Posts', id: 'PARTIAL-LIST' }];
+			},
+			transformResponse: (response: BE_PostsResponse) => {
+				return {
+					...response,
+					posts: response.posts.map(mapBackendPostToFrontend),
+				};
 			},
 		}),
 		// Endpoint для получения конкретного поста
-		getPost: builder.query<Post, Pick<User, 'group'> & { postId: string }>({
-			query: ({ group, postId }) => ({
-				url: `v2/${group}/posts/${postId}`,
+		getPost: builder.query<Post, Pick<User, 'group'> & Pick<Post, 'id'>>({
+			query: ({ group, id }) => ({
+				url: `v2/${group}/posts/${id}`,
 			}),
 			// Здесь мы кешируем конкретный пост, указывая ID-шник поста
 			providesTags: (result) => [{ type: 'Posts', id: result?.id }],
-			transformResponse: (response: BE_GetPostResponse) => {
+			transformResponse: (response: BE_Post) => {
 				return mapBackendPostToFrontend(response);
 			},
 		}),
@@ -85,13 +140,37 @@ export const postApi = createApi({
 				body,
 			}),
 			// После успешного выполнения запроса мы инвалидируем
-			// тег "Posts". Это заставит RTK Query заново отправить запрос
-			// на получения постов, а там как раз будет свежеиспеченный пост,
+			// тег [{type: "Posts", id: 'PARTIAL-LIST{]. Это заставит RTK Query заново отправить запрос
+			// на получения списка постов, а там как раз будет свежеиспеченный пост,
 			// который мы и увидим на странице постов
-			invalidatesTags: ['Posts'],
+			// При этом, если мы посещали какие-то детальные страницы,
+			// то их кэш сохранится
+			invalidatesTags: [{ type: 'Posts', id: 'PARTIAL-LIST' }],
+		}),
+		deletePost: builder.mutation<
+			BE_Post,
+			Pick<User, 'group'> & Pick<Post, 'id'>
+		>({
+			query({ group, id }) {
+				return {
+					url: `v2/${group}/posts/${id}`,
+					method: 'DELETE',
+				};
+			},
+			// После успешного удаления поста инвалидируем запросы на получения списка постов и
+			// детальной страницы удаленного поста. Мы ведь не хотим заново открыть пость и увидеть
+			// его содержимое из кэша
+			invalidatesTags: (result) => [
+				{ type: 'Posts', id: result?._id },
+				{ type: 'Posts', id: 'PARTIAL-LIST' },
+			],
 		}),
 	}),
 });
 
-export const { useGetPostsQuery, useGetPostQuery, useCreatePostMutation } =
-	postApi;
+export const {
+	useGetPostsQuery,
+	useGetPostQuery,
+	useCreatePostMutation,
+	useDeletePostMutation,
+} = postApi;

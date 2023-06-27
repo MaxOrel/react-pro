@@ -115,6 +115,7 @@ export const PostForm: FC = withProtection(() => {
 								required
 								error={!!errors.text?.message}
 								helperText={errors.text?.message}
+								multiline
 								rows={3}
 								{...field}
 							/>

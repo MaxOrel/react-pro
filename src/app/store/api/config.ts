@@ -6,6 +6,7 @@ export const customBaseQuery = fetchBaseQuery({
 	prepareHeaders: (headers, { getState }) => {
 		const accessToken = (getState() as RootState).auth.accessToken;
 
+		// Если имеем в наличии Access token, то добавляем его в заголовки
 		if (accessToken) {
 			headers.set('authorization', `Bearer ${accessToken}`);
 		}

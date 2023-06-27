@@ -9,9 +9,10 @@ export const PostList: FC<{ posts: Post[] }> = ({ posts }) => {
 	return (
 		<Grid
 			container
-			spacing={2}
-			justifyContent='flex-start'
-			alignItems='stretch'>
+			spacing={3}
+			justifyContent='center'
+			alignItems='stretch'
+			sx={{ mb: 6 }}>
 			{posts.map((post) => (
 				<PostListItem key={post.id} {...post} />
 			))}

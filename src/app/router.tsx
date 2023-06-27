@@ -6,6 +6,7 @@ import { SignOutPage } from 'pages/SignOutPage';
 import { PostsPage } from 'pages/PostsPage';
 import { MainPage } from 'pages/MainPage';
 import { CreatePostPage } from 'pages/CreatePostPage';
+import { PostPage } from 'pages/PostPage';
 
 export const router = createBrowserRouter([
 	{
@@ -19,6 +20,10 @@ export const router = createBrowserRouter([
 			{
 				path: 'posts',
 				element: <PostsPage />,
+			},
+			{
+				path: 'posts/:postId',
+				element: <PostPage />,
 			},
 			{
 				path: 'posts/create',

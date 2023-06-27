@@ -10,10 +10,17 @@ import Typography from '@mui/material/Typography';
 import { deepPurple } from '@mui/material/colors';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { Post } from 'models/postModel';
-import { Box, Button, Grid, Stack } from '@mui/material';
+import { Button, Grid, Stack } from '@mui/material';
 import { dateFormatter } from 'utils/time';
+import { useNavigate } from 'react-router-dom';
+import { useDeletePostMutation } from 'app/store/api/postsApi';
+import { useAppSelector } from 'hooks/useAppSelector';
+import { userSelector } from 'app/store/slices/userSlice';
+import { LoadingButton } from '@mui/lab';
+import { toast } from 'react-toastify';
+import { getMessageFromError } from 'utils/errorUtils';
 
-export const PostListItem: FC<Post> = ({
+export const PostDetail: FC<Post> = ({
 	title,
 	text,
 	author,
@@ -22,8 +29,30 @@ export const PostListItem: FC<Post> = ({
 	createdAt,
 	id,
 }) => {
+	const navigate = useNavigate();
+	const user = useAppSelector(userSelector);
+
+	const [deletePostRequest, { isLoading }] = useDeletePostMutation();
+
+	const deleteHandler = async () => {
+		try {
+			await deletePostRequest({ group: user.group, id }).unwrap();
+			toast.success('Пост успешно удален');
+			navigate('/posts');
+		} catch (error) {
+			toast.error(
+				getMessageFromError(error, 'Не известная ошибка при удалении поста')
+			);
+		}
+	};
+
 	return (
-		<Grid item>
+		<Grid
+			item
+			container
+			direction='column'
+			justifyContent='center'
+			alignItems='center'>
 			<Card
 				elevation={1}
 				sx={{
@@ -44,7 +73,7 @@ export const PostListItem: FC<Post> = ({
 				/>
 				<CardMedia component='img' height='194' image={image} alt={title} />
 				<CardContent>
-					<Typography noWrap={true} variant='body2' color='text.secondary'>
+					<Typography variant='body2' color='text.secondary'>
 						{text}
 					</Typography>
 				</CardContent>
@@ -57,11 +86,22 @@ export const PostListItem: FC<Post> = ({
 						</IconButton>
 						<Typography sx={{ color: 'grey.500' }}>{likes.length}</Typography>
 					</Stack>
-					<Box>
-						<Button href={id} variant='outlined'>
-							Learn More
+					<Stack direction='row' useFlexGap spacing={1}>
+						<Button
+							onClick={() => navigate('..', { relative: 'path' })}
+							color='primary'
+							variant='contained'>
+							Back
 						</Button>
-					</Box>
+						<LoadingButton
+							color='error'
+							variant='contained'
+							loading={isLoading}
+							disabled={isLoading}
+							onClick={deleteHandler}>
+							Delete
+						</LoadingButton>
+					</Stack>
 				</CardActions>
 			</Card>
 		</Grid>
