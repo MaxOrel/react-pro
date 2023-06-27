@@ -1,7 +1,6 @@
 import { AppBar, Box, Link, Toolbar, Typography } from '@mui/material';
 import { accessTokenSelector } from 'app/store/slices/authSlice';
 import { useAppSelector } from 'hooks/useAppSelector';
-
 import { FC } from 'react';
 
 // Интерфейс для объекта-ссылки
